@@ -1,0 +1,44 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id           String     @id @default(uuid())
+  email        String     @unique
+  isFirstLogin Boolean    @default(true)
+  
+  contracts    Contract[]
+  todos        Todo[]     
+}
+
+model Contract {
+  id             String    @id @default(uuid())
+  name           String
+  status         String    @default("ANALYZING") 
+  riskScore      Int       @default(0)
+  fileUrl        String
+  aiSummary      String?   @db.Text
+  createdAt      DateTime  @default(now())
+  expirationDate DateTime?
+  updatedAt      DateTime  @updatedAt
+  userId         String
+  user           User      @relation(fields: [userId], references: [id])
+}  
+
+
+model Todo {
+  id        String   @id @default(uuid())
+  task      String
+  isDone    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
