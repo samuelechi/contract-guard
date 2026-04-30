@@ -4,23 +4,33 @@ import { createClient } from "@/lib/supabase/server";
 export async function GET(request: Request) {
     const { searchParams, origin } = new URL(request.url);
 
-    // 1. Google sends us a "code" (the ticket)
     const code = searchParams.get("code");
+    const token_hash = searchParams.get("token_hash");
+    const type = searchParams.get("type");
+    const next = searchParams.get("next") ?? "/dashboard/settings";
 
-    // 2. Where should we go next? (Default to dashboard)
-    const next = searchParams.get("next") ?? "/dashboard";
+    const supabase = await createClient();
 
-    if (code) {
-        // 3. Exchange the ticket for a real User Session
-        const supabase = await createClient();
-        const { error } = await supabase.auth.exchangeCodeForSession(code);
+    // Handle token_hash (email change confirmation)
+    if (token_hash && type) {
+        const { error } = await supabase.auth.verifyOtp({
+            type: type as any,
+            token_hash,
+        });
 
         if (!error) {
-            // 4. Success! Forward the user to the dashboard
             return NextResponse.redirect(`${origin}${next}`);
         }
     }
 
-    // 5. If something broke, send them back to login
+    // Handle code (OAuth / magic link)
+    if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+        if (!error) {
+            return NextResponse.redirect(`${origin}${next}`);
+        }
+    }
+
     return NextResponse.redirect(`${origin}/login?error=auth-code-error`);
 }
