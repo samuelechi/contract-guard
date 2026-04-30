@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useRef } from "react";
 import {
     Mail, Lock, Bell, Trash2, Check,
     Eye, EyeOff, AlertTriangle, Shield, ChevronRight,
-    Loader2, ArrowLeft
+    Loader2, ArrowLeft, User, Camera, X
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import {
+    updateProfile,
     updateEmail,
     updatePassword,
     updateNotifications,
@@ -19,7 +20,7 @@ import {
 } from "./actions";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-type Section = "email" | "password" | "notifications" | "danger" | "";
+type Section = "profile" | "email" | "password" | "notifications" | "danger" | "";
 
 interface NotifPrefs {
     contractAnalyzed: boolean;
@@ -30,6 +31,9 @@ interface NotifPrefs {
 
 interface Props {
     initialNotifPrefs: NotifPrefs | null;
+    initialDisplayName: string;
+    initialAvatarUrl: string | null;
+    userEmail: string;
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -85,8 +89,8 @@ function SectionCard({ title, icon, children, id, active, onClick }: {
 function StatusBanner({ type, message }: { type: "success" | "error"; message: string }) {
     return (
         <div className={`flex items-start gap-2.5 p-3 rounded-xl border text-xs font-medium mt-3 ${type === "success"
-            ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400"
-            : "bg-red-50 dark:bg-red-500/10 border-red-100 dark:border-red-500/20 text-red-600 dark:text-red-400"
+                ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400"
+                : "bg-red-50 dark:bg-red-500/10 border-red-100 dark:border-red-500/20 text-red-600 dark:text-red-400"
             }`}>
             {type === "success"
                 ? <Check className="h-4 w-4 shrink-0 mt-0.5" />
@@ -111,8 +115,43 @@ function SubmitButton({ pending, saved, label = "Save Changes" }: { pending: boo
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
-export default function SettingsClient({ initialNotifPrefs }: Props) {
-    const [activeSection, setActiveSection] = useState<Section>("email");
+export default function SettingsClient({ initialNotifPrefs, initialDisplayName, initialAvatarUrl, userEmail }: Props) {
+    const [activeSection, setActiveSection] = useState<Section>("profile");
+
+    // Profile state
+    const [displayName, setDisplayName] = useState(initialDisplayName);
+    const [avatarPreview, setAvatarPreview] = useState<string | null>(initialAvatarUrl);
+    const [avatarFile, setAvatarFile] = useState<File | null>(null);
+    const [profilePending, startProfileTransition] = useTransition();
+    const [profileResult, setProfileResult] = useState<{ error?: string; success?: string } | null>(null);
+    const [profileSaved, setProfileSaved] = useState(false);
+    const avatarRef = useRef<HTMLInputElement>(null);
+
+    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setAvatarFile(file);
+        const reader = new FileReader();
+        reader.onload = () => setAvatarPreview(reader.result as string);
+        reader.readAsDataURL(file);
+    };
+
+    const handleProfileSave = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setProfileResult(null);
+        const fd = new FormData();
+        fd.append('displayName', displayName);
+        if (avatarFile) fd.append('avatar', avatarFile);
+        startProfileTransition(async () => {
+            const result = await updateProfile(fd);
+            setProfileResult(result);
+            if (result.success) {
+                setProfileSaved(true);
+                setAvatarFile(null);
+                setTimeout(() => setProfileSaved(false), 3000);
+            }
+        });
+    };
 
     // Email state
     const [emailPending, startEmailTransition] = useTransition();
@@ -239,6 +278,68 @@ export default function SettingsClient({ initialNotifPrefs }: Props) {
             </div>
 
             <div className="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8 space-y-3">
+
+                {/* ── PROFILE ── */}
+                <SectionCard title="Profile" icon={<User className="h-4 w-4" />} id="profile" active={activeSection} onClick={setActiveSection}>
+                    <form onSubmit={handleProfileSave} className="mt-5 space-y-5">
+                        {/* Avatar */}
+                        <div className="flex items-center gap-4">
+                            <div className="relative shrink-0">
+                                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center overflow-hidden ring-4 ring-blue-50 dark:ring-blue-500/10">
+                                    {avatarPreview
+                                        ? <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
+                                        : <User className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
+                                    }
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => avatarRef.current?.click()}
+                                    className="absolute -bottom-1 -right-1 w-7 h-7 bg-blue-600 hover:bg-blue-700 text-white rounded-full flex items-center justify-center shadow-md transition-colors"
+                                >
+                                    <Camera className="h-3.5 w-3.5" />
+                                </button>
+                                <input ref={avatarRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                                <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">Profile Photo</p>
+                                <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">JPG, PNG or GIF · Max 2MB</p>
+                                <div className="flex items-center gap-3 mt-1.5">
+                                    <button type="button" onClick={() => avatarRef.current?.click()} className="text-xs text-blue-600 dark:text-blue-400 hover:underline">
+                                        {avatarPreview ? 'Change photo' : 'Upload photo'}
+                                    </button>
+                                    {avatarPreview && (
+                                        <button
+                                            type="button"
+                                            onClick={() => { setAvatarPreview(null); setAvatarFile(null); }}
+                                            className="text-xs text-red-500 dark:text-red-400 hover:underline flex items-center gap-1"
+                                        >
+                                            <X className="h-3 w-3" />Remove
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Display Name */}
+                        <div>
+                            <label className={labelClass}>Display Name</label>
+                            <Input
+                                className={inputClass}
+                                placeholder={userEmail.split('@')[0]}
+                                value={displayName}
+                                onChange={(e) => setDisplayName(e.target.value)}
+                            />
+                            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1.5">
+                                Shown across ContractGuard. Leave blank to use your email username.
+                            </p>
+                        </div>
+
+                        {profileResult && <StatusBanner type={profileResult.error ? "error" : "success"} message={(profileResult.error || profileResult.success)!} />}
+                        <div className="flex justify-end pt-1">
+                            <SubmitButton pending={profilePending} saved={profileSaved} />
+                        </div>
+                    </form>
+                </SectionCard>
 
                 {/* ── CHANGE EMAIL ── */}
                 <SectionCard title="Change Email" icon={<Mail className="h-4 w-4" />} id="email" active={activeSection} onClick={setActiveSection}>
