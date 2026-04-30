@@ -11,25 +11,17 @@ export async function GET(request: Request) {
 
     const supabase = await createClient();
 
-    // Handle token_hash (email change confirmation)
     if (token_hash && type) {
         const { error } = await supabase.auth.verifyOtp({
             type: type as any,
             token_hash,
         });
-
-        if (!error) {
-            return NextResponse.redirect(`${origin}${next}`);
-        }
+        if (!error) return NextResponse.redirect(`${origin}${next}`);
     }
 
-    // Handle code (OAuth / magic link)
     if (code) {
         const { error } = await supabase.auth.exchangeCodeForSession(code);
-
-        if (!error) {
-            return NextResponse.redirect(`${origin}${next}`);
-        }
+        if (!error) return NextResponse.redirect(`${origin}${next}`);
     }
 
     return NextResponse.redirect(`${origin}/login?error=auth-code-error`);
