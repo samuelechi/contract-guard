@@ -34,7 +34,7 @@ export async function updateEmail(formData: FormData): Promise<{ error?: string;
         // Update the email — Supabase will send a confirmation email to the new address
         const { error: updateError } = await supabase.auth.updateUser(
             { email: newEmail },
-            { emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/dashboard/settings` }
+            { emailRedirectTo: `https://contract-guard-seven.vercel.app/auth/callback?next=/dashboard/settings` }
         );
         if (updateError) return { error: updateError.message };
 
