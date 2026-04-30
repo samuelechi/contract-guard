@@ -38,8 +38,8 @@ export default function TodoList({ initialTodos, userId }: { initialTodos: Todo[
                                 <div
                                     onClick={() => handleToggle(todo.id, todo.isDone)}
                                     className={`w-4.5 h-4.5 rounded-md border shrink-0 flex items-center justify-center cursor-pointer transition-all ${todo.isDone
-                                            ? 'bg-emerald-100 dark:bg-emerald-500/20 border-emerald-400 dark:border-emerald-500'
-                                            : 'border-slate-300 dark:border-[#263652] hover:border-blue-400 dark:hover:border-blue-500/50'
+                                        ? 'bg-emerald-100 dark:bg-emerald-500/20 border-emerald-400 dark:border-emerald-500'
+                                        : 'border-slate-300 dark:border-[#263652] hover:border-blue-400 dark:hover:border-blue-500/50'
                                         }`}
                                 >
                                     {todo.isDone && (
@@ -54,7 +54,7 @@ export default function TodoList({ initialTodos, userId }: { initialTodos: Todo[
                             </label>
                             <button
                                 onClick={() => deleteTodo(todo.id)}
-                                className="opacity-0 group-hover:opacity-100 text-slate-300 dark:text-slate-600 hover:text-red-500 dark:hover:text-red-400 transition-all shrink-0"
+                                className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 active:text-red-500 transition-all shrink-0"
                             >
                                 <Trash2 className="h-3.5 w-3.5" />
                             </button>
