@@ -30,7 +30,7 @@ export default async function ContractDetailsPage({ params }: ContractPageProps)
     const isMediumRisk = contract.riskScore > 30 && contract.riskScore <= 70;
 
     const getStatusBadge = (status: string) => {
-        const base = "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border";
+        const base = "inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs font-medium border";
         if (status === "COMPLETED") return (
             <span className={`${base} bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20`}>
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400" />Analyzed
@@ -73,24 +73,24 @@ export default async function ContractDetailsPage({ params }: ContractPageProps)
             <StatusChecker status={contract.status} />
 
             {/* TOPBAR */}
-            <header className="sticky top-0 z-10 bg-white/90 dark:bg-[#0B0F1A]/95 backdrop-blur-sm border-b border-slate-200 dark:border-[#1e2d45] px-6 py-4 transition-colors duration-200">
-                <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+            <header className="sticky top-0 z-10 bg-white/90 dark:bg-[#0B0F1A]/95 backdrop-blur-sm border-b border-slate-200 dark:border-[#1e2d45] px-4 sm:px-6 py-3 sm:py-4 transition-colors duration-200">
+                <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
 
-                    <div className="flex items-center gap-3 min-w-0">
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                         <SidebarTrigger className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white shrink-0" />
-                        <Button variant="outline" size="icon" asChild className="shrink-0 bg-transparent border-slate-200 dark:border-[#263652] text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-blue-500/50 hover:bg-slate-50 dark:hover:bg-[#1a2235]">
+                        <Button variant="outline" size="icon" asChild className="shrink-0 h-8 w-8 sm:h-9 sm:w-9 bg-transparent border-slate-200 dark:border-[#263652] text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-blue-500/50 hover:bg-slate-50 dark:hover:bg-[#1a2235]">
                             <Link href="/dashboard">
                                 <ArrowLeft className="h-4 w-4" />
                             </Link>
                         </Button>
-                        <div className="min-w-0">
-                            <div className="flex flex-wrap items-center gap-2 mb-1">
-                                <h1 className="text-lg md:text-xl font-semibold tracking-tight text-slate-900 dark:text-white truncate">
+                        <div className="min-w-0 flex-1">
+                            <div className="flex flex-wrap items-center gap-2 mb-0.5">
+                                <h1 className="text-sm sm:text-lg md:text-xl font-semibold tracking-tight text-slate-900 dark:text-white truncate max-w-[160px] sm:max-w-xs md:max-w-none">
                                     {contract.name}
                                 </h1>
                                 {getStatusBadge(contract.status)}
                             </div>
-                            <div className="flex items-center text-xs text-slate-400 dark:text-slate-500 gap-4">
+                            <div className="hidden sm:flex items-center text-xs text-slate-400 dark:text-slate-500 gap-4">
                                 <span className="flex items-center gap-1.5">
                                     <Calendar className="h-3.5 w-3.5" />
                                     {new Date(contract.createdAt).toLocaleDateString()}
@@ -103,11 +103,12 @@ export default async function ContractDetailsPage({ params }: ContractPageProps)
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3 shrink-0">
+                    <div className="flex items-center gap-2 shrink-0">
                         <ThemeToggle />
-                        <Button variant="outline" className="bg-transparent border-slate-200 dark:border-[#263652] text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-blue-500/50 hover:bg-slate-50 dark:hover:bg-[#1a2235]" asChild>
+                        <Button variant="outline" size="sm" className="bg-transparent border-slate-200 dark:border-[#263652] text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-blue-500/50 hover:bg-slate-50 dark:hover:bg-[#1a2235] h-9 px-2 sm:px-4" asChild>
                             <a href={contract.fileUrl} target="_blank" rel="noopener noreferrer">
-                                <Download className="mr-2 h-4 w-4" />Original PDF
+                                <Download className="h-4 w-4 sm:mr-2" />
+                                <span className="hidden sm:inline">Original PDF</span>
                             </a>
                         </Button>
                     </div>
@@ -115,16 +116,20 @@ export default async function ContractDetailsPage({ params }: ContractPageProps)
             </header>
 
             {/* MAIN CONTENT */}
-            <main className="flex-1 w-full max-w-7xl mx-auto p-4 md:p-6 lg:p-8">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 lg:h-200 xl:h-240">
+            <main className="flex-1 w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+                {/* 
+                    Mobile: stacked (PDF viewer then analysis)
+                    Desktop: side-by-side 
+                */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-8 lg:h-[800px] xl:h-[900px]">
 
                     {/* PDF VIEWER */}
-                    <div className="h-96 md:h-120 lg:h-full flex flex-col overflow-hidden bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#1e2d45] rounded-2xl transition-colors duration-200">
-                        <div className="py-3.5 px-5 bg-slate-50 dark:bg-[#1a2235] border-b border-slate-100 dark:border-[#1e2d45] flex items-center gap-2">
+                    <div className="h-72 sm:h-96 lg:h-full flex flex-col overflow-hidden bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#1e2d45] rounded-2xl transition-colors duration-200">
+                        <div className="py-3 px-4 sm:px-5 bg-slate-50 dark:bg-[#1a2235] border-b border-slate-100 dark:border-[#1e2d45] flex items-center gap-2 shrink-0">
                             <FileText className="h-4 w-4 text-blue-500 dark:text-blue-400" />
                             <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Document Preview</span>
                         </div>
-                        <div className="flex-1 bg-slate-100/50 dark:bg-[#0f1825]">
+                        <div className="flex-1 bg-slate-100/50 dark:bg-[#0f1825] min-h-0">
                             {contract.fileUrl ? (
                                 <iframe
                                     className="w-full h-full border-0"
@@ -141,35 +146,35 @@ export default async function ContractDetailsPage({ params }: ContractPageProps)
                     </div>
 
                     {/* AI ANALYSIS */}
-                    <div className="flex flex-col gap-5 lg:h-full lg:overflow-y-auto lg:pr-1">
+                    <div className="flex flex-col gap-4 sm:gap-5 lg:h-full lg:overflow-y-auto lg:pr-1">
 
                         {/* RISK SCORE */}
-                        <div className={`rounded-2xl border-2 p-6 transition-colors duration-200 ${riskCardBg}`}>
+                        <div className={`rounded-2xl border-2 p-4 sm:p-6 transition-colors duration-200 ${riskCardBg}`}>
                             <div className="flex justify-between items-start">
                                 <div>
-                                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Overall Risk Score</p>
+                                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 sm:mb-3">Overall Risk Score</p>
                                     <div className="flex items-end gap-2">
-                                        <span className={`text-5xl font-bold tracking-tighter font-mono ${riskColor}`}>
+                                        <span className={`text-4xl sm:text-5xl font-bold tracking-tighter font-mono ${riskColor}`}>
                                             {contract.status === "COMPLETED" ? contract.riskScore : "--"}
                                         </span>
-                                        <span className="text-xl text-slate-400 dark:text-slate-500 mb-1.5">/ 100</span>
+                                        <span className="text-lg sm:text-xl text-slate-400 dark:text-slate-500 mb-1">/ 100</span>
                                     </div>
                                 </div>
-                                <div className={`p-3 rounded-2xl ${riskIconBg}`}>
+                                <div className={`p-2.5 sm:p-3 rounded-2xl ${riskIconBg}`}>
                                     {contract.status !== "COMPLETED"
-                                        ? <ShieldAlert className="h-7 w-7" />
+                                        ? <ShieldAlert className="h-6 w-6 sm:h-7 sm:w-7" />
                                         : isHighRisk
-                                            ? <AlertTriangle className="h-7 w-7" />
-                                            : <CheckCircle className="h-7 w-7" />}
+                                            ? <AlertTriangle className="h-6 w-6 sm:h-7 sm:w-7" />
+                                            : <CheckCircle className="h-6 w-6 sm:h-7 sm:w-7" />}
                                 </div>
                             </div>
-                            <div className="mt-5 w-full bg-slate-200/60 dark:bg-[#1a2235] rounded-full h-2 overflow-hidden">
+                            <div className="mt-4 sm:mt-5 w-full bg-slate-200/60 dark:bg-[#1a2235] rounded-full h-2 overflow-hidden">
                                 <div
                                     className={`h-full rounded-full transition-all duration-1000 ${barColor}`}
                                     style={{ width: contract.status === "COMPLETED" ? `${Math.max(contract.riskScore, 2)}%` : '0%' }}
                                 />
                             </div>
-                            <p className="mt-4 text-sm font-medium text-slate-600 dark:text-slate-400">
+                            <p className="mt-3 sm:mt-4 text-sm font-medium text-slate-600 dark:text-slate-400">
                                 {contract.status !== "COMPLETED" ? "Awaiting analysis..."
                                     : isHighRisk ? "⚠️ High risk clauses detected. Urgent review required."
                                         : isMediumRisk ? "⚠️ Moderate risks detected. Proceed with caution."
@@ -178,24 +183,24 @@ export default async function ContractDetailsPage({ params }: ContractPageProps)
                         </div>
 
                         {/* AI SUMMARY */}
-                        <div className="flex-1 flex flex-col bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#1e2d45] rounded-2xl overflow-hidden min-h-80 md:min-h-96 lg:min-h-0 transition-colors duration-200">
-                            <div className="px-6 py-4 border-b border-slate-100 dark:border-[#1e2d45] bg-slate-50/50 dark:bg-[#1a2235] flex items-center gap-3">
+                        <div className="flex-1 flex flex-col bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#1e2d45] rounded-2xl overflow-hidden min-h-64 sm:min-h-80 lg:min-h-0 transition-colors duration-200">
+                            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-100 dark:border-[#1e2d45] bg-slate-50/50 dark:bg-[#1a2235] flex items-center gap-3 shrink-0">
                                 <div className="w-7 h-7 bg-blue-100 dark:bg-blue-500/10 rounded-lg flex items-center justify-center">
                                     <Sparkles className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
                                 </div>
                                 <span className="text-sm font-semibold text-slate-800 dark:text-white">AI Contract Summary</span>
                             </div>
-                            <div className="p-6 flex-1 overflow-y-auto">
+                            <div className="p-4 sm:p-6 flex-1 overflow-y-auto">
                                 {contract.aiSummary ? (
                                     <div className="whitespace-pre-wrap text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                                         {contract.aiSummary}
                                     </div>
                                 ) : (
-                                    <div className="flex flex-col items-center justify-center h-full text-center gap-5 py-10">
+                                    <div className="flex flex-col items-center justify-center h-full text-center gap-4 sm:gap-5 py-8 sm:py-10">
                                         <div className="relative">
                                             <div className="absolute -inset-4 bg-blue-100 dark:bg-blue-500/10 rounded-full animate-pulse opacity-50 blur-xl" />
                                             <div className="bg-white dark:bg-[#1a2235] p-4 rounded-full shadow-sm relative border border-blue-50 dark:border-blue-500/20">
-                                                <Loader2 className="h-9 w-9 text-blue-600 dark:text-blue-400 animate-spin" />
+                                                <Loader2 className="h-8 w-8 sm:h-9 sm:w-9 text-blue-600 dark:text-blue-400 animate-spin" />
                                             </div>
                                         </div>
                                         <div>

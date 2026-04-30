@@ -10,18 +10,19 @@ datasource db {
 }
 
 model User {
-  id           String     @id @default(uuid())
-  email        String     @unique
-  isFirstLogin Boolean    @default(true)
-  
-  contracts    Contract[]
-  todos        Todo[]     
+  id                String              @id @default(uuid())
+  email             String              @unique
+  isFirstLogin      Boolean             @default(true)
+
+  contracts         Contract[]
+  todos             Todo[]
+  notificationPrefs NotificationPrefs?
 }
 
 model Contract {
   id             String    @id @default(uuid())
   name           String
-  status         String    @default("ANALYZING") 
+  status         String    @default("ANALYZING")
   riskScore      Int       @default(0)
   fileUrl        String
   aiSummary      String?   @db.Text
@@ -30,15 +31,27 @@ model Contract {
   updatedAt      DateTime  @updatedAt
   userId         String
   user           User      @relation(fields: [userId], references: [id])
-}  
-
+}
 
 model Todo {
   id        String   @id @default(uuid())
   task      String
   isDone    Boolean  @default(false)
   createdAt DateTime @default(now())
-  
+
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model NotificationPrefs {
+  id                String   @id @default(uuid())
+  userId            String   @unique
+  contractAnalyzed  Boolean  @default(true)
+  highRiskDetected  Boolean  @default(true)
+  deadlineReminders Boolean  @default(true)
+  marketingEmails   Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
