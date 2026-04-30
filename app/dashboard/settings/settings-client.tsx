@@ -23,6 +23,10 @@ import {
 type Section = "profile" | "email" | "password" | "notifications" | "danger" | "";
 
 interface NotifPrefs {
+    id?: string;
+    userId?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
     contractAnalyzed: boolean;
     highRiskDetected: boolean;
     deadlineReminders: boolean;
