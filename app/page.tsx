@@ -1,8 +1,3 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { UploadCloud } from "lucide-react"; // Icon library included by default
-import { AuthScreen } from "../app/features/auth/components/auth-screen";
-
 import Link from "next/link";
 import { ShieldCheck, Calendar, Zap, Lock, MessageSquare, FileText, ArrowRight, Play, CheckCircle } from "lucide-react";
 
@@ -69,6 +64,12 @@ const steps = [
   },
 ];
 
+const navLinks = [
+  { label: "Features", href: "#features" },
+  { label: "How It Works", href: "#how-it-works" },
+  { label: "Pricing", href: "/pricing" },
+];
+
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white font-sans">
@@ -86,11 +87,11 @@ export default function LandingPage() {
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
-            {["Features", "How It Works", "About"].map((item) => (
-              <a key={item} href={`#${item.toLowerCase().replace(" ", "-")}`}
+            {navLinks.map((item) => (
+              <Link key={item.label} href={item.href}
                 className="text-sm font-medium text-[#8A9BB5] hover:text-white transition-colors">
-                {item}
-              </a>
+                {item.label}
+              </Link>
             ))}
           </div>
 
@@ -112,14 +113,11 @@ export default function LandingPage() {
 
         {/* Left — text */}
         <div className="relative bg-[#0B0F1A] flex flex-col justify-center px-10 lg:px-16 py-20 overflow-hidden">
-          {/* Dot pattern */}
           <div className="absolute inset-0 bg-[radial-gradient(#1e2d45_1px,transparent_1px)] bg-size-[24px_24px] opacity-50 pointer-events-none" />
-          {/* Glow */}
           <div className="absolute -top-40 -left-40 w-125 h-125 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute bottom-0 right-0 w-80 h-80 bg-cyan-500/6 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10 max-w-xl">
-            {/* Badge */}
             <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/25 text-blue-400 text-xs font-semibold px-3 py-1.5 rounded-full mb-6 uppercase tracking-wider">
               <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
               AI-Powered Legal Protection
@@ -152,13 +150,8 @@ export default function LandingPage() {
               </a>
             </div>
 
-            {/* Trust signals */}
             <div className="flex items-center gap-6">
-              {[
-                "No credit card required",
-                "Free to use",
-                "Instant results",
-              ].map((item) => (
+              {["No credit card required", "Free to use", "Instant results"].map((item) => (
                 <div key={item} className="flex items-center gap-1.5">
                   <CheckCircle className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
                   <span className="text-xs text-[#556070] font-medium">{item}</span>
@@ -175,11 +168,9 @@ export default function LandingPage() {
             alt="Professional reviewing contracts"
             className="absolute inset-0 w-full h-full object-cover"
           />
-          {/* Dark overlay to blend with theme */}
           <div className="absolute inset-0 bg-linear-to-r from-[#0B0F1A]/60 via-transparent to-transparent" />
           <div className="absolute inset-0 bg-linear-to-t from-[#0B0F1A]/40 via-transparent to-transparent" />
 
-          {/* Floating stat card */}
           <div className="absolute bottom-10 left-10 bg-[#111827]/90 backdrop-blur-sm border border-[#1e2d45] rounded-2xl p-5 shadow-2xl">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
@@ -202,7 +193,6 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Floating speed badge */}
           <div className="absolute top-10 right-10 bg-[#111827]/90 backdrop-blur-sm border border-[#1e2d45] rounded-xl px-4 py-3 shadow-xl">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-blue-500/10 flex items-center justify-center">
@@ -283,9 +273,7 @@ export default function LandingPage() {
             From upload to insight<br />in seconds
           </h2>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 relative">
-            {/* Connector line */}
             <div className="hidden lg:block absolute top-8 left-[22%] right-[22%] h-px bg-linear-to-r from-blue-200 to-cyan-200" />
-
             {steps.map((step) => (
               <div key={step.num} className="relative text-center">
                 <div className="w-16 h-16 rounded-full bg-linear-to-br from-blue-500 to-cyan-500 flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/20 relative z-10">
@@ -339,11 +327,16 @@ export default function LandingPage() {
             </span>
           </div>
           <div className="flex items-center gap-8">
-            {["Features", "Privacy", "Terms"].map((item) => (
-              <a key={item} href="#"
+            {[
+              { label: "Features", href: "#features" },
+              { label: "Pricing", href: "/pricing" },
+              { label: "Privacy", href: "#" },
+              { label: "Terms", href: "#" },
+            ].map((item) => (
+              <Link key={item.label} href={item.href}
                 className="text-xs text-[#556070] hover:text-[#8A9BB5] transition-colors font-medium">
-                {item}
-              </a>
+                {item.label}
+              </Link>
             ))}
           </div>
           <p className="text-xs text-[#2d3f56]">© 2026 ContractGuard. All rights reserved.</p>
