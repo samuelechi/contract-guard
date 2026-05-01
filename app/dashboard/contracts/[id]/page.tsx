@@ -8,6 +8,7 @@ import StatusChecker from "@/components/status-checker";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import ReanalyzeButton from './reanalyze-button';
 
 interface ContractPageProps {
     params: Promise<{ id: string }>
@@ -105,6 +106,7 @@ export default async function ContractDetailsPage({ params }: ContractPageProps)
 
                     <div className="flex items-center gap-2 shrink-0">
                         <ThemeToggle />
+                        <ReanalyzeButton contractId={contract.id} status={contract.status} />
                         <Button variant="outline" size="sm" className="bg-transparent border-slate-200 dark:border-[#263652] text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-blue-500/50 hover:bg-slate-50 dark:hover:bg-[#1a2235] h-9 px-2 sm:px-4" asChild>
                             <a href={contract.fileUrl} target="_blank" rel="noopener noreferrer">
                                 <Download className="h-4 w-4 sm:mr-2" />
