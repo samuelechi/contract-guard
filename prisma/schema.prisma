@@ -19,6 +19,7 @@ model User {
   contracts         Contract[]
   todos             Todo[]
   apiKeys       ApiKey[]
+  webhooks     Webhook[]
   notificationPrefs NotificationPrefs?
 }
 
@@ -69,4 +70,18 @@ model ApiKey {
   createdAt   DateTime  @default(now())
 
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Webhook {
+  id            String    @id @default(uuid())
+  userId        String
+  url           String
+  label         String
+  events        String[]
+  isActive      Boolean   @default(true)
+  lastFiredAt   DateTime?
+  lastStatus    Int?
+  createdAt     DateTime  @default(now())
+
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

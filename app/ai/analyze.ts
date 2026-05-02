@@ -2,9 +2,10 @@
 
 import OpenAi from "openai";
 import { prisma } from "@/lib/prisma";
+import { fireWebhooksForUser } from "@/app/dashboard/api/webhook-actions";
 
 const openai = new OpenAi({
-    apiKey: process.env.OPENAI_API_KEY, // Changed to ALL CAPS
+    apiKey: process.env.OPENAI_API_KEY,
 });
 
 export async function analyzeContract(contractId: string, contractText: string) {
@@ -39,13 +40,12 @@ export async function analyzeContract(contractId: string, contractText: string) 
         });
 
         const rawContent = completion.choices[0].message.content;
-        if (!rawContent) {
-            throw new Error("Empty response from AI");
-        }
+        if (!rawContent) throw new Error("Empty response from AI");
+
         const aiResponse = JSON.parse(rawContent);
         console.log("✅ AI Analysis Complete:", aiResponse);
 
-        // update database
+        // Update database
         await prisma.contract.update({
             where: { id: contractId },
             data: {
@@ -55,6 +55,30 @@ export async function analyzeContract(contractId: string, contractText: string) 
                 expirationDate: aiResponse.expirationDate ? new Date(aiResponse.expirationDate) : null,
             },
         });
+
+        // Fire webhooks
+        const contract = await prisma.contract.findUnique({
+            where: { id: contractId },
+            select: { userId: true, name: true, riskScore: true, expirationDate: true }
+        });
+
+        if (contract) {
+            await fireWebhooksForUser(contract.userId, 'contract.analyzed', {
+                contractId,
+                name: contract.name,
+                riskScore: contract.riskScore,
+                status: 'COMPLETED',
+                expirationDate: contract.expirationDate,
+            });
+
+            if (contract.riskScore > 70) {
+                await fireWebhooksForUser(contract.userId, 'contract.high_risk', {
+                    contractId,
+                    name: contract.name,
+                    riskScore: contract.riskScore,
+                });
+            }
+        }
 
         return { success: true };
     } catch (error) {
