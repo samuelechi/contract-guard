@@ -212,8 +212,8 @@ export default function ChatClient({ contracts }: Props) {
                         <button
                             onClick={() => setContractDropdownOpen(!contractDropdownOpen)}
                             className={`w-full flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl border text-sm transition-all ${selectedContract
-                                    ? 'border-blue-200 dark:border-blue-500/30 bg-blue-50/50 dark:bg-blue-500/5'
-                                    : 'border-slate-200 dark:border-[#263652] bg-slate-50 dark:bg-[#111827] hover:border-blue-300 dark:hover:border-blue-500/40'
+                                ? 'border-blue-200 dark:border-blue-500/30 bg-blue-50/50 dark:bg-blue-500/5'
+                                : 'border-slate-200 dark:border-[#263652] bg-slate-50 dark:bg-[#111827] hover:border-blue-300 dark:hover:border-blue-500/40'
                                 }`}
                         >
                             <div className="flex items-center gap-2.5 min-w-0">
@@ -340,19 +340,19 @@ export default function ChatClient({ contracts }: Props) {
                         <div key={msg.id} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                             {/* Avatar */}
                             <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${msg.role === 'user'
-                                    ? 'bg-blue-600 text-white'
-                                    : 'bg-slate-100 dark:bg-[#1a2235] text-slate-600 dark:text-slate-400'
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-slate-100 dark:bg-[#1a2235] text-slate-600 dark:text-slate-400'
                                 }`}>
                                 {msg.role === 'user'
-                                    ? <User className="h-4 w-4" />
-                                    : <Bot className="h-4 w-4" />}
+                                    ? "👨‍⚖️"
+                                    : "🤖"}
                             </div>
 
                             {/* Bubble */}
                             <div className={`max-w-[85%] sm:max-w-[75%] ${msg.role === 'user' ? 'items-end' : 'items-start'} flex flex-col gap-1`}>
                                 <div className={`px-4 py-3 rounded-2xl ${msg.role === 'user'
-                                        ? 'bg-blue-600 text-white rounded-tr-sm'
-                                        : 'bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#1e2d45] rounded-tl-sm'
+                                    ? 'bg-blue-600 text-white rounded-tr-sm'
+                                    : 'bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#1e2d45] rounded-tl-sm'
                                     }`}>
                                     {msg.role === 'user' ? (
                                         <p className="text-sm leading-relaxed">{msg.content}</p>
