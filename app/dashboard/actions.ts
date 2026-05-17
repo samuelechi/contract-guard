@@ -61,10 +61,9 @@ export async function UploadContract(formData: FormData) {
     });
 
     // Trigger AI analysis in background
+    // Trigger AI analysis — await it so Vercel doesn't kill it
     if (contractText) {
-        analyzeContract(contract.id, contractText).catch(err =>
-            console.error("Background Analysis Error:", err)
-        );
+        await analyzeContract(contract.id, contractText);
     }
 
     revalidatePath("/dashboard");
