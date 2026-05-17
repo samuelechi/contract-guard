@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { analyzeContract } from "@/app/ai/analyze";
-import { extractText } from "unpdf";
+import { extractTextFromPdf } from "@/lib/pdf-loader";
 
 export async function UploadContract(formData: FormData) {
     const file = formData.get("file") as File;
@@ -23,13 +23,13 @@ export async function UploadContract(formData: FormData) {
         }
     });
 
-    // Extract text using unpdf (works on Vercel serverless)
+    // Extract text using pdf2json (same as before)
     console.log("📄 Extracting text from PDF...");
     let contractText = "";
     try {
         const arrayBuffer = await file.arrayBuffer();
-        const { text } = await extractText(new Uint8Array(arrayBuffer), { mergePages: true });
-        contractText = text;
+        const fileBuffer = Buffer.from(arrayBuffer);
+        contractText = await extractTextFromPdf(fileBuffer);
         console.log("✅ Text extracted successfully. Length:", contractText.length);
     } catch (e) {
         console.error("⚠️ Text extraction failed (still uploading file):", e);
@@ -60,8 +60,7 @@ export async function UploadContract(formData: FormData) {
         }
     });
 
-    // Trigger AI analysis in background
-    // Trigger AI analysis — await it so Vercel doesn't kill it
+    // Await analysis so Vercel doesn't kill it
     if (contractText) {
         await analyzeContract(contract.id, contractText);
     }

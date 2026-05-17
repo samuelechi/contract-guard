@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/lib/prisma';
 import { analyzeContract } from '@/app/ai/analyze';
 import { revalidatePath } from 'next/cache';
-import { extractText } from 'unpdf';
+import { extractTextFromPdf } from '@/lib/pdf-loader';
 
 export async function reanalyzeContract(contractId: string): Promise<{ success: boolean; error?: string }> {
     try {
@@ -20,7 +20,7 @@ export async function reanalyzeContract(contractId: string): Promise<{ success: 
         });
         if (!contract) return { success: false, error: 'Contract not found' };
 
-        // Reset contract to ANALYZING state
+        // Reset to ANALYZING
         await prisma.contract.update({
             where: { id: contractId },
             data: {
@@ -38,16 +38,15 @@ export async function reanalyzeContract(contractId: string): Promise<{ success: 
         if (!fileResponse.ok) throw new Error('Failed to fetch PDF file');
 
         const arrayBuffer = await fileResponse.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
 
-        // Extract text using unpdf (works on Vercel serverless)
-        const { text } = await extractText(new Uint8Array(arrayBuffer), { mergePages: true });
-        const contractText = text;
+        // Use same extractor as upload
+        const contractText = await extractTextFromPdf(buffer);
 
         if (!contractText || contractText.trim().length < 50) {
             throw new Error('Could not extract text from PDF');
         }
 
-        // Run analysis using existing action
         const result = await analyzeContract(contractId, contractText);
 
         revalidatePath(`/dashboard/contracts/${contractId}`);
