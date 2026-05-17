@@ -18,7 +18,7 @@ export async function analyzeContract(contractId: string, contractText: string) 
 
     try {
         const completion = await openai.chat.completions.create({
-            model: "gpt-4o",
+            model: "gpt-4o-mini",
             messages: [
                 {
                     role: "system",
@@ -56,28 +56,32 @@ export async function analyzeContract(contractId: string, contractText: string) 
             },
         });
 
-        // Fire webhooks
-        const contract = await prisma.contract.findUnique({
-            where: { id: contractId },
-            select: { userId: true, name: true, riskScore: true, expirationDate: true }
-        });
-
-        if (contract) {
-            await fireWebhooksForUser(contract.userId, 'contract.analyzed', {
-                contractId,
-                name: contract.name,
-                riskScore: contract.riskScore,
-                status: 'COMPLETED',
-                expirationDate: contract.expirationDate,
+        // Fire webhooks — wrapped so they never crash the analysis
+        try {
+            const contract = await prisma.contract.findUnique({
+                where: { id: contractId },
+                select: { userId: true, name: true, riskScore: true, expirationDate: true }
             });
 
-            if (contract.riskScore > 70) {
-                await fireWebhooksForUser(contract.userId, 'contract.high_risk', {
+            if (contract) {
+                await fireWebhooksForUser(contract.userId, 'contract.analyzed', {
                     contractId,
                     name: contract.name,
                     riskScore: contract.riskScore,
+                    status: 'COMPLETED',
+                    expirationDate: contract.expirationDate,
                 });
+
+                if (contract.riskScore > 70) {
+                    await fireWebhooksForUser(contract.userId, 'contract.high_risk', {
+                        contractId,
+                        name: contract.name,
+                        riskScore: contract.riskScore,
+                    });
+                }
             }
+        } catch (webhookError) {
+            console.error("⚠️ Webhook firing failed (non-critical):", webhookError);
         }
 
         return { success: true };
