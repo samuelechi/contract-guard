@@ -93,8 +93,8 @@ function SectionCard({ title, icon, children, id, active, onClick }: {
 function StatusBanner({ type, message }: { type: "success" | "error"; message: string }) {
     return (
         <div className={`flex items-start gap-2.5 p-3 rounded-xl border text-xs font-medium mt-3 ${type === "success"
-                ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400"
-                : "bg-red-50 dark:bg-red-500/10 border-red-100 dark:border-red-500/20 text-red-600 dark:text-red-400"
+            ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400"
+            : "bg-red-50 dark:bg-red-500/10 border-red-100 dark:border-red-500/20 text-red-600 dark:text-red-400"
             }`}>
             {type === "success"
                 ? <Check className="h-4 w-4 shrink-0 mt-0.5" />
@@ -346,39 +346,7 @@ export default function SettingsClient({ initialNotifPrefs, initialDisplayName, 
                 </SectionCard>
 
                 {/* ── CHANGE EMAIL ── */}
-                <SectionCard title="Change Email" icon={<Mail className="h-4 w-4" />} id="email" active={activeSection} onClick={setActiveSection}>
-                    <form onSubmit={handleEmailSubmit} className="mt-5 space-y-4">
-                        <div>
-                            <label className={labelClass}>New Email Address</label>
-                            <Input name="newEmail" type="email" className={inputClass} placeholder="new@email.com" required />
-                        </div>
-                        <div>
-                            <label className={labelClass}>Confirm with Current Password</label>
-                            <div className="relative">
-                                <Input
-                                    name="password"
-                                    type={showEmailPw ? "text" : "password"}
-                                    className={`${inputClass} pr-10`}
-                                    placeholder="••••••••"
-                                    required
-                                />
-                                <button type="button" onClick={() => setShowEmailPw(!showEmailPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
-                                    {showEmailPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                </button>
-                            </div>
-                        </div>
-                        <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 rounded-xl p-3 flex items-start gap-2.5">
-                            <Shield className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
-                            <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
-                                A confirmation link will be sent to your new address. Your email won't change until you click it.
-                            </p>
-                        </div>
-                        {emailResult && <StatusBanner type={emailResult.error ? "error" : "success"} message={(emailResult.error || emailResult.success)!} />}
-                        <div className="flex justify-end pt-1">
-                            <SubmitButton pending={emailPending} saved={emailSaved} />
-                        </div>
-                    </form>
-                </SectionCard>
+
 
                 {/* ── CHANGE PASSWORD ── */}
                 <SectionCard title="Change Password" icon={<Lock className="h-4 w-4" />} id="password" active={activeSection} onClick={setActiveSection}>
