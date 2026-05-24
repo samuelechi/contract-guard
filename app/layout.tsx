@@ -9,9 +9,7 @@ export const metadata: Metadata = {
   title: "ContractGuard",
   description: "AI-powered contract risk analysis",
   // Next.js automatically maps this to a proper <link rel="icon"> in the <head>
-  icons: {
-    icon: "/favicon.ico",
-  },
+
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
